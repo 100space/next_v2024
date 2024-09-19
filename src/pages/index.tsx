@@ -1,8 +1,9 @@
 import SearchableLayout from "@/components/searchable-layout"
 import style from "./index.module.css"
-import type { ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
 import books from "@/mock/books.json"
 import BookItem from "@/components/book-item"
+import type { InferGetServerSidePropsType } from "next"
 
 /**
  * ssr을 위한 함수
@@ -13,15 +14,24 @@ export const getServerSideProps = () => {
     // 컴포넌트보다 먼저 실행되어서, 컴포넌트에 필요한 데이터를 불러오는 함수
     const data = "hello"
 
-    // 리턴된 데이터는 컴포넌트의 props로 전달된다.
     return {
+        // 리턴된 데이터는 컴포넌트의 props로 전달된다.
         props: {
             data,
         },
     }
 }
-export default function Home({ data }: any) {
+
+// Home 컴포넌트
+// - 서버측에서 한번 실행되고, 클라이언트측에서는 한번 더 실행된다. 그렇기 때문에 console.log(data)는 서버측에서 한번, 클라이언트측에서 한번 찍힌다.
+export default function Home({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) {
     console.log(data)
+
+    useEffect(() => {
+        // 클라이언트측에서만 실행되는 코드
+        console.log("client", window)
+    }, [])
+
     return (
         <div className={style.container}>
             <section>
